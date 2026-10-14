@@ -115,6 +115,7 @@
   input#importFile{display:none;}
   .data-row{display:flex;gap:8px;margin-top:10px;}
   .data-row .save-btn, .data-row .ghost-btn{margin-top:0;}
+.vchk{width:20px;height:20px;border:2px solid var(--sage);border-radius:6px;flex:none;margin-top:1px;cursor:pointer}.vchk.done{background:var(--orange);border-color:var(--orange)}
 </style>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#152E24">
@@ -576,7 +577,7 @@ function render(){
   }
   if(tab === "pillars") content.innerHTML = renderPillars();
   if(tab === "history") content.innerHTML = renderHistory();
-  if(tab === "vision") content.innerHTML = renderVision();
+  if(tab === "vision"){ content.innerHTML = renderVision(); bindVision(); }
 
   attachHandlers();
 }
@@ -743,9 +744,29 @@ function renderPillars(){
 }
 
 function renderVision(){
-  const V = ["Absolutely ripped", "Retired both parents", "Built the Unfazed Atelier brand to a $10M valuation", "Completed his Masters in Finland in Bio-Energy", "Relocated to Finland and has properties across Europe", "Mastered Stoicism", "Dresses elegantly", "Speaks elegantly", "An avid reader", "Married at 26", "Committed to his wife", "A good husband", "A good son", "A dependable friend", "Eats healthy", "Doesn't drink or smoke", "Every girl's dream, but committed to his wife", "A hard worker", "Has conquered lust", "Has a good relationship with God", "Has a razor-sharp intellect", "Excellent at reading people", "An excellent strategist", "Has a net worth of $20M", "Made it to Forbes 30 Under 30", "Built Unfazed into a multi-industry brand, faring well in the automobile sector: MSFIT MOTORS"];
-  const rows = V.map((t,i)=>`<div class="milestone"><div class="milestone-label"><b style="color:var(--orange)">${i+1}.</b> ${escapeHtml(t)}</div></div>`).join("");
-  return `<div class="card"><h2><span class="n">★</span>A Second Chance?</h2><div class="sub" style="margin-bottom:8px">The four-year picture. Day 730 is the first checkpoint, not the finish.</div>${rows}</div>`;
+  const V = [["Absolutely ripped", ["Gym 4x a week, logged in the app", "Daily protein target and a simple meal plan", "Weekly photo and body measurements", "7+ hours sleep every night"]], ["Retired both parents", ["Set the ₦70M Abuja house target and a monthly saving amount", "Open a separate savings account for it", "Start a monthly allowance for your parents, however small", "Build two income streams beyond annotation"]], ["Unfazed Atelier to a $10M valuation", ["Set a Null & Void pre-order date at least 3 weeks out", "Deliver your first 10 paid orders", "Post weekly and grow Instagram past 1,000 followers", "Track revenue and margin monthly", "Register the business and protect the name and logo"]], ["Masters in Bio-Energy, Finland", ["Take the free IELTS diagnostic, then the exam in your service year", "Shortlist EMJM-SBBE and Aalto and note deadlines", "Email 5 professors about funded positions", "Prepare transcripts, CV, motivation letter and referees", "Apply for the 2028 intake (late 2027 to Jan 2028)"]], ["Relocated to Finland, properties across Europe", ["Secure admission and funding first", "Learn Finnish daily and keep the Duolingo streak", "Learn the residence permit steps", "Save for relocation costs", "Study property rules once you have stable income there"]], ["Mastered Stoicism", ["Read Meditations, the Enchiridion and Letters from a Stoic", "5-minute morning intention and evening review", "Pause before reacting to anything that angers you", "Weekly note: what was in my control"]], ["Dresses elegantly", ["Build a capsule wardrobe of 10 well-fitting pieces", "Find a good tailor", "Keep clothes clean and ironed", "Wear Unfazed pieces well-groomed"]], ["Speaks elegantly", ["Read aloud 10 minutes daily", "Learn and use 3 new words a week", "Record yourself weekly and review", "Practice pausing before answering"]], ["Avid reader", ["20 pages every day", "One book a month, 12 a year", "Keep a reading list", "Write short notes after each book"]], ["Married at 26", ["Stable income first", "Savings plan for the wedding and home", "Talk openly about timelines with your partner", "Seek premarital guidance"]], ["Committed to his wife", ["Write your standards down", "Weekly quality time", "Stay honest and transparent", "Avoid situations that test it, like idle late nights alone"]], ["A good husband", ["Learn about money, teamwork and communication", "Practice listening without trying to fix", "Aim to provide, protect and be present", "Find mentors who are good husbands"]], ["A good son", ["Call your parents weekly", "Send monthly support, even small", "Visit regularly", "Involve them in your plans"]], ["A dependable friend", ["Reply within a day", "Keep promises and show up", "Check in on 3 friends each month", "Do not lean on one person for everything"]], ["Eats healthy", ["Plan meals weekly", "Cut sugary drinks", "Protein and vegetables in every meal", "Cook simply at home"]], ["Doesn't drink or smoke", ["Write it as a firm rule", "Avoid the places and people that push it", "Find social plans that don't centre on it", "Keep it as a daily line in your log"]], ["Every girl's dream, but committed", ["Build the real traits: fitness, style, money, character", "Set boundaries early", "Stay transparent with your partner", "Handle attention without entertaining it"]], ["A hard worker", ["One fixed daily deep-work block", "Pick your top 3 tasks each morning", "Weekly review of what got done", "Protect your sleep so mornings work"]], ["Has conquered lust", ["GET UP immediately after any slip", "Phone out of bed, no idle late nights", "7+ hours sleep, your biggest risk factor", "Fill idle evenings with gym, reading or project work", "Log honestly every day"]], ["Good relationship with God", ["Daily prayer, logged", "Weekly fellowship", "Daily scripture reading", "Weekly reflection or journal"]], ["Razor-sharp intellect", ["Read widely", "Learn one hard skill at a time (code, finance)", "Write a weekly summary of what you learned", "Limit scrolling, protect sleep and exercise"]], ["Excellent at reading people", ["Read books on psychology and negotiation", "Observe before you speak", "Ask questions and listen more", "Review conversations weekly"]], ["An excellent strategist", ["Write the 4-year plan with yearly goals", "Monthly review of plan vs reality", "Study strategy case studies", "Decide using written options and trade-offs"]], ["Net worth of $20M", ["Build income first: Unfazed, tech, annotation", "Save and invest a fixed share of every income", "Learn investing and business finance", "Own assets and equity in ventures", "Track net worth monthly"]], ["Forbes 30 Under 30", ["Build something measurable: revenue, users or impact", "Document wins publicly", "Check the nomination rules and age cutoff", "Build press and network"]], ["Unfazed multi-industry, MSFIT MOTORS", ["Prove streetwear first", "Add a second product line", "Study automobile business models and partners", "Write the MSFIT MOTORS business plan", "Raise capital or partners once Unfazed is profitable"]]];
+  data.vision = data.vision || {};
+  const rows = V.map((g,gi)=>{
+    const done = g[1].filter((_,i)=>data.vision[gi+"_"+i]).length;
+    const steps = g[1].map((t,i)=>`<div class="milestone"><div class="vchk ${data.vision[gi+"_"+i]?'done':''}" data-g="${gi}" data-i="${i}"></div><div class="milestone-label ${data.vision[gi+"_"+i]?'done':''}">${escapeHtml(t)}</div></div>`).join("");
+    return `<details class="card" style="padding:12px 16px"><summary style="cursor:pointer;font-weight:600;font-size:14px"><span style="color:var(--orange)">${gi+1}.</span> ${escapeHtml(g[0])} <span class="vcount" style="float:right;color:var(--sage)">${done}/${g[1].length}</span></summary><div style="margin-top:8px">${steps}</div></details>`;
+  }).join("");
+  return `<div class="card"><h2><span class="n">★</span>A Second Chance?</h2><div class="sub">Four-year picture. Day 730 is the first checkpoint. Tap a goal to open its steps.</div></div>${rows}`;
+}
+
+function bindVision(){
+  document.querySelectorAll(".vchk").forEach(el=>{
+    el.onclick = ()=>{
+      data.vision = data.vision || {};
+      const k = el.dataset.g+"_"+el.dataset.i;
+      data.vision[k] = !data.vision[k];
+      el.classList.toggle("done");
+      el.nextElementSibling.classList.toggle("done");
+      const d = el.closest("details");
+      d.querySelector(".vcount").textContent = d.querySelectorAll(".vchk.done").length+"/"+d.querySelectorAll(".vchk").length;
+      save("Saved");
+    };
+  });
 }
 
 function renderHistory(){
