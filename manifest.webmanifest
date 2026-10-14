@@ -1,0 +1,22 @@
+{
+  "name": "Unfazed \u2014 Life Reset",
+  "short_name": "Life Reset",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0D211A",
+  "theme_color": "#152E24",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "scope": "./"
+}

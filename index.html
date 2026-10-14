@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Unfazed — Life Reset</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;800&display=swap');
+
+  :root{
+    --forest:#152E24;
+    --forest-deep:#0D211A;
+    --ivory:#F4EFE3;
+    --orange:#C1541C;
+    --orange-soft:#E37A44;
+    --sage:#8CA394;
+    --line:rgba(244,239,227,0.12);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--forest-deep);color:var(--ivory);font-family:'Inter',sans-serif;}
+  .wrap{max-width:720px;margin:0 auto;padding:28px 20px 60px;}
+
+  .eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--orange-soft);font-weight:600;margin-bottom:6px;}
+  h1{font-family:'Fraunces',serif;font-weight:600;font-size:28px;margin:0 0 4px;}
+  .sub{color:var(--sage);font-size:13px;margin-bottom:22px;}
+
+  .hero{
+    background:linear-gradient(160deg,var(--forest) 0%, var(--forest-deep) 100%);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:26px 24px;
+    margin-bottom:22px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero:before{
+    content:"";position:absolute;top:-40%;right:-20%;width:260px;height:260px;
+    background:radial-gradient(circle, rgba(193,84,28,0.18), transparent 70%);
+  }
+  .day-count{font-family:'Fraunces',serif;font-size:64px;font-weight:700;line-height:1;color:var(--ivory);}
+  .day-count span{color:var(--orange-soft);}
+  .day-label{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--sage);margin-top:6px;}
+  .hero-dates{display:flex;justify-content:space-between;margin-top:18px;font-size:12px;color:var(--sage);border-top:1px solid var(--line);padding-top:14px;}
+
+  .tabs{display:flex;gap:4px;margin-bottom:18px;background:var(--forest);border-radius:12px;padding:4px;border:1px solid var(--line);}
+  .tab{flex:1;text-align:center;padding:9px 0;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;color:var(--sage);transition:.15s;}
+  .tab.active{background:var(--orange);color:var(--ivory);}
+
+  .card{background:var(--forest);border:1px solid var(--line);border-radius:14px;padding:18px 18px;margin-bottom:14px;}
+  .card h2{font-family:'Fraunces',serif;font-size:16px;margin:0 0 12px;font-weight:600;}
+  .card h2 .n{color:var(--orange-soft);margin-right:6px;}
+
+  .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);}
+  .toggle-row:last-child{border-bottom:none;}
+  .toggle-label{font-size:14px;}
+  .toggle-sub{font-size:11px;color:var(--sage);margin-top:2px;}
+
+  .switch{width:42px;height:24px;border-radius:12px;background:rgba(244,239,227,0.15);position:relative;cursor:pointer;flex-shrink:0;transition:.15s;}
+  .switch.on{background:var(--orange);}
+  .switch .dot{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--ivory);transition:.15s;}
+  .switch.on .dot{left:21px;}
+
+  textarea, input[type=number], input[type=text]{
+    width:100%;background:var(--forest-deep);border:1px solid var(--line);border-radius:8px;
+    color:var(--ivory);font-family:'Inter',sans-serif;font-size:13px;padding:10px;resize:vertical;
+  }
+  textarea:focus, input:focus{outline:1px solid var(--orange-soft);}
+
+  .streak-row{display:flex;gap:10px;margin-top:4px;}
+  .streak-pill{flex:1;background:var(--forest-deep);border-radius:10px;padding:12px;text-align:center;}
+  .streak-pill b{font-family:'Fraunces',serif;font-size:22px;display:block;color:var(--orange-soft);}
+  .streak-pill span{font-size:10px;color:var(--sage);text-transform:uppercase;letter-spacing:.08em;}
+
+  .milestone{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);}
+  .milestone:last-child{border-bottom:none;}
+  .check{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--sage);flex-shrink:0;margin-top:1px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .check.done{background:var(--orange);border-color:var(--orange);}
+  .check.done:after{content:"✓";font-size:12px;color:var(--ivory);}
+  .milestone-label{font-size:13.5px;}
+  .milestone-label.done{color:var(--sage);text-decoration:line-through;}
+
+  .progress-outer{height:10px;background:var(--forest-deep);border-radius:5px;overflow:hidden;margin:10px 0 6px;}
+  .progress-inner{height:100%;background:linear-gradient(90deg,var(--orange),var(--orange-soft));}
+  .progress-text{font-size:12px;color:var(--sage);display:flex;justify-content:space-between;}
+
+  .installments{display:flex;gap:8px;margin-top:12px;}
+  .inst{flex:1;background:var(--forest-deep);border:1px solid var(--line);border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;}
+  .inst.done{border-color:var(--orange);background:rgba(193,84,28,0.15);}
+  .inst .amt{font-family:'Fraunces',serif;font-size:14px;color:var(--ivory);}
+  .inst .lbl{font-size:9px;color:var(--sage);text-transform:uppercase;letter-spacing:.06em;margin-top:3px;}
+  .inst.done .lbl{color:var(--orange-soft);}
+
+  .save-btn{background:var(--orange);color:var(--ivory);border:none;border-radius:9px;padding:12px;width:100%;font-size:14px;font-weight:600;cursor:pointer;margin-top:6px;}
+  .save-btn:active{transform:scale(0.99);}
+  .ghost-btn{background:transparent;color:var(--orange-soft);border:1px solid var(--orange);border-radius:9px;padding:12px;width:100%;font-size:14px;font-weight:600;cursor:pointer;margin-top:10px;}
+  .status{font-size:11px;color:var(--sage);text-align:center;margin-top:8px;min-height:14px;}
+
+  .history-item{padding:10px 0;border-bottom:1px solid var(--line);font-size:12.5px;}
+  .history-item:last-child{border-bottom:none;}
+  .history-date{color:var(--orange-soft);font-weight:600;margin-right:8px;}
+  .history-tags{color:var(--sage);}
+  .empty{color:var(--sage);font-size:13px;text-align:center;padding:20px 0;}
+
+  .summary-card{background:linear-gradient(165deg,var(--forest),var(--forest-deep));border:1px solid var(--line);border-radius:18px;padding:26px 22px;}
+  .summary-title{font-family:'Fraunces',serif;font-size:20px;font-weight:700;margin-bottom:2px;}
+  .summary-date{font-size:12px;color:var(--sage);margin-bottom:18px;}
+  .summary-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:13.5px;}
+  .summary-row:last-of-type{border-bottom:none;}
+  .summary-row .v{font-weight:600;}
+  .v.yes{color:#7FBF8E;}
+  .v.no{color:var(--orange-soft);}
+  .v.na{color:var(--sage);}
+  .summary-notes{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);font-size:13px;color:#D9D3C4;white-space:pre-wrap;}
+  .summary-foot{margin-top:16px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--orange-soft);text-align:center;}
+  textarea#copyBox{position:absolute;left:-9999px;}
+  input#importFile{display:none;}
+  .data-row{display:flex;gap:8px;margin-top:10px;}
+  .data-row .save-btn, .data-row .ghost-btn{margin-top:0;}
+</style>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#152E24">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Life Reset">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+</head>
+<body>
+<div class="wrap" id="app">Loading…</div>
+
+<script>
+const KEY = "unfazed-life-reset:data";
+const START = "2026-07-03";
+const END = "2028-07-01";
+const todayStr = () => new Date().toISOString().slice(0,10);
+
+const SEED_ENTRIES = {
+  "2026-07-03": {
+    "prayed": null,
+    "habitFree": true,
+    "gym": true,
+    "sleepHours": "",
+    "focused": null,
+    "calm": true,
+    "showedUp": true,
+    "notes": "I went to school today, we were supposed to get the enzymes wed be using today but it cannot be prepared as it's a continuous process for 3 days and tomorrow is Saturday(not a work day) so the process starts on monday smd we'd get the enzymes ready on Wednesday next week, i am attending an even with my girl this evening"
+  },
+  "2026-07-04": {
+    "prayed": true,
+    "habitFree": true,
+    "gym": true,
+    "sleepHours": "",
+    "focused": true,
+    "calm": true,
+    "showedUp": true,
+    "notes": "Went to the gym for about and hour. Edited my final year project progress report\nWent for an event with my girl last night and although we fought, we settled things really quickly and mayuredly before we went to bed last night."
+  },
+  "2026-07-05": {
+    "prayed": true,
+    "habitFree": null,
+    "gym": false,
+    "sleepHours": "",
+    "focused": null,
+    "calm": true,
+    "showedUp": true,
+    "notes": "Today is Sunday, went to church\nDidn't go very early but was not too late either. Had my girl over as she wasnt having a good day. Comforted her and reassured her. We eventually had sex. A few hours go by and I engaged pmo, sighs. I later did my sisters assignment, mind yoy i paused the assignment fir that disgusting shii. So yeah didnt exactly stay on task. I completed it though. Im gonna send it to my phone from my PC and then send it to her after taking this inventory. That was the most productive thing i did today. Spent an hour with my friends playing FIFA and now im in school to read through the night for my test this coming Thursday. So yeah day 3 in a nutshell. Bad.\nToday is my rest day for gym sundays are gym free days although i did about 30 pushups"
+  },
+  "2026-07-06": {
+    "prayed": true,
+    "habitFree": true,
+    "gym": false,
+    "sleepHours": "",
+    "focused": true,
+    "calm": true,
+    "showedUp": true,
+    "notes": "After reading last night or early this morning by almost 3AM i sadly engaged pmo, again.\nSo rhis morning I went for my project work, did over 30 set ups with my group pure blend, binary blend and the overall simplex centroid and it took virtually the whole of today, I made a deposit of 20k for my phone bringing the total figure paid to 105k. I am too tired to read, had my girl bring me food this evening and now we having a slight issue that is currently being resolved.\nCouldn't go to the gym because I literally came back home from school by 7pm"
+  },
+  "2026-07-07": {
+    "prayed": true,
+    "habitFree": null,
+    "gym": true,
+    "sleepHours": "",
+    "focused": true,
+    "calm": true,
+    "showedUp": true,
+    "notes": "Startwd off well\nPrayed prepared in time for my lecture scheduled for 9AM attended the class, wrote a quiz, met with my project supervisor. Came back cooked and fucked up. Pmo\nAfter that I read for the better part of an hour\nWent to the gym by 5:30PM\nCame home 7:30 PM\nNow I'm in school for that reading thru thr night (tdb meaning till day break)\nNothing done aboyt money making yet by day 4\nTgings should change fr but noe i think tests will be coming at us faster than I am ready ti gamble, but I need money."
+  },
+  "2026-07-08": {
+    "prayed": true,
+    "habitFree": true,
+    "gym": true,
+    "sleepHours": "",
+    "focused": true,
+    "calm": true,
+    "showedUp": true,
+    "notes": "Came home from tdb by 6AM. Slept till 11 AM\nTried reading for a bit but it wasn't working so I called my girl, slept off on the call after nearly 30 mins of us talking. This was around around 2pm and woke up around. 5\nWent to the gym\nDid another 2 hours and now I've been reading since 8\nIts currently 11pm"
+  },
+  "2026-07-09": {
+    "prayed": true,
+    "habitFree": true,
+    "gym": true,
+    "sleepHours": "",
+    "focused": true,
+    "calm": true,
+    "showedUp": true,
+    "notes": "Woke up 7AM\ncontinued my reading till 7:40am\nWent to school\nWrote the test around 9\nIt was good, thankfully.\nAttended my remaining 3 classes that lasted till 6\nThree new courses have scheduled tests\nOne on Tuesday 11am\nThe other on Thursday by 2pm\nCame back home tired after a clash with my guys\nAte\nWent to see my friend who fell ill this morning\nBrought him to my house gave him.some food and drugs\nCalled my girl as she's been feeling low in life and encouraged her\nShes better now\nAnd I'm about to sleep as I am Soo tired\nIts 10:57 at the time of writing this"
+  },
+  "2026-07-10": {
+    "prayed": true,
+    "habitFree": true,
+    "gym": false,
+    "sleepHours": "",
+    "focused": null,
+    "calm": true,
+    "showedUp": true,
+    "notes": "Woke up\nCleaned my house cos my girl was coming over plus the house was getting messy\nWashed some of my clothes\nCooked cos tomorrow will be a long day for project work\nProlly another morning till night thing\nShe came over, we had a good time\nFucked, slept, woke up and saw her off around 6 I've not done añy reading ad we've barely had light but I will even if it's two pages or 3."
+  },
+  "2026-07-11": {
+    "prayed": true,
+    "habitFree": null,
+    "gym": false,
+    "sleepHours": "",
+    "focused": true,
+    "calm": true,
+    "showedUp": true,
+    "notes": "After uploading for yesterday i sadly engaged in pmo so I left todays unchecked even if I didn't today\nIts a pattern that happens on late nught I see\nSpexially if im alone and bored\nGotta do something about that\nSo about today.\nWoke up around 9\nI prepared and went to school for my project stuff by 11\nRead for a bit although less than 1 page finishing page 4/35\nWent to see my girl around 1, I'm having a crazy pregnancy scare, her period is late by a day and nothing. I try to play it cool, mostly because she seems relaxed but bro it's not funny. I'm literally fighting tooth and nail to be cool and calm.\nWas with her till 3\nCane back and resumed work and we were at it till 7\nReturned hungry, made something to eat, went to play game for an hour\nIts 10 now and I'm about to read. Sigh"
+  },
+  "2026-07-12": {
+    "prayed": true,
+    "habitFree": true,
+    "gym": false,
+    "sleepHours": "",
+    "focused": true,
+    "calm": true,
+    "showedUp": true,
+    "notes": "Woke up\nWent to church came back made something to eat\nRead for a bit\nLike 30 mins went to school for project stuff around 2 before then I'd go e to get mifi for my girl to use with her PC\nNepa didn't allow us continue as the weighing balance we were using needs light\nSo we ended by 6\nI went to see my girl\nSpenk like 15 mins with her after giving her the mifi and came home\nRead about one page\nIm a bit tired my body feel itchy too\nSo I intend taking tomorrow off to read intensively for my test on Tuesday"
+  },
+  "2026-07-13": {
+    "prayed": true,
+    "habitFree": null,
+    "gym": true,
+    "sleepHours": "",
+    "focused": true,
+    "calm": true,
+    "showedUp": true,
+    "notes": "Woke up àround 5am\nRead till 6 and sadly engaged pmo around 6 this morning\nDid 50 pushups after\nI went to school for an assignment we were supposed to have and then also had an impromptu meeting with my prohect partners and my project supervisor which ended by 6pm.\nPassed by the gym this evening and did light work of about 20mins\nWeve gotten the enzyme, I met my girl as the enzyme was being prepared in her faculty when we went to get it\nShes getting better.\nIm currently cooking by 10pm\nI have avoyt 4 assignments given by my project supervisor to me today that should be ready by tomorrow\nI'm sleepy and i also need to read fornmy test so in other words, im fucked"
+  },
+  "2026-07-14": {
+    "prayed": true,
+    "habitFree": true,
+    "gym": true,
+    "sleepHours": "",
+    "focused": true,
+    "calm": true,
+    "showedUp": true,
+    "notes": "Woke up 5:30\nRead till 7 when I dressed and went to school to continue my reading, had a class and a quiz by 8AM\nMy test was postponed till 2pm\nWrote it by 3pm\nCould have beem better but it wasn't bad\nRealistic 28/40\nBut I could have gotten 40/40 easy\nWent to see my level adviser. Came home\nAnd now working on one annotation stuff my friend put me on\nGood news though\nMy 3 month upkeep owed is supposed to be paid this week that's 60k and then one of my tasks that should be paid within the week too is about 15k..."
+  },
+  "2026-07-15": {
+    "prayed": true,
+    "habitFree": false,
+    "gym": true,
+    "sleepHours": "",
+    "focused": true,
+    "calm": true,
+    "showedUp": true,
+    "notes": "After logging for yesterday, got into a fight with my girl but we fixed almost immediately we good now\nEngaged pmo late last night\nI still feel like shit for doing that\nSo for today\nWoke up prayed\nWent for mt.practicak that was canceled after getting to school\nMet up with my girl and spent like 2 hour with her\nWent back to meet my.project supervisor and stayed there till 4 before leaving cos we were working\nCane back home\nWent to the gym\nCooked, ate and now im reading afresh for the course im writing tomorrow\nIm soo fucking sleepy\nIts 9:33\nIm at page 5/20\nAnd it has calculations that ive not touched"
+  },
+  "2026-07-16": {
+    "prayed": true,
+    "habitFree": true,
+    "gym": true,
+    "sleepHours": "",
+    "focused": true,
+    "calm": true,
+    "showedUp": true,
+    "notes": "Woke up by 4AM\nread till 8\nWent to school for my test and it was postponed till 12, attended a lecture and then wrote the test and its a realistic 30/40, could bebmore but fairs\nWent to see my girl and stayed for two hours until it was time for my next class. Went for it\nSlept through it for the most part and came back home to fond that my roommate ate out of my food and he had his!!\nThis is just one out of the long list of fuck ups\nIm gonna confront him now\nJust need to take this inventory\nHad my girl over ços she needed to charge and we had light at the time\nSo I plugged her stuff and took her to my friend's house where I narrated the whole thing to them\nHow hes been stealing from me for years.\nI am so pissed"
+  },
+  "2026-07-17": {
+    "prayed": true,
+    "habitFree": true,
+    "gym": false,
+    "sleepHours": "",
+    "focused": true,
+    "calm": true,
+    "showedUp": true,
+    "notes": "Woke up\nPrayed\nPrepared and went for project stuff\nWas already feeling sick at the time\nI stayed on task, eventually went to clinic as we were letting someone calculate\nCame back to meet our supervisor in the lab who has become a lot more friendly with us lately encouraging us\nSo we digested all substrates needing naoh pretreatment\nI eventually went home (town) I need to sell my iPhone X, the one that spoilt as scrap to raise money for the next installmental payment\nNow I didn't take it along when I went to school and I came to town straight from school\nI guess I'll have someone waybill it to me\nI confronted my roommate about using my foodstuff via chats as I'm not in school\nThere's been a bit of backs and forth and im getting tired\nWe'll finish it up tomorrow."
+  },
+  "2026-07-18": {
+    "prayed": true,
+    "habitFree": null,
+    "gym": false,
+    "sleepHours": "",
+    "focused": true,
+    "calm": true,
+    "showedUp": true,
+    "notes": "Staryed off badly\nPmo twice\nTjen went to try to sell my iphone x but that this didnt work\nThe guy somehow co vinved me to take the iphone xr\nEvrrything works\n64gb.\nWent 5o helo my girl getbstuff for her business\nI still feel some tyoe of way\nMy body be having the pin and needle effect"
+  },
+  "2026-07-19": {
+    "prayed": true,
+    "habitFree": true,
+    "gym": false,
+    "sleepHours": "",
+    "focused": true,
+    "calm": true,
+    "showedUp": true,
+    "notes": "Woke up\nDidn't go to church\nWent out to get something to eat\nActually made something to eat and then didnt do much\nSlept again cos i was having s lil headace\nWoke up ate again\nEheeen actually the main reason why I did t do much was because I ran out of sub\nThe phone deal is still pending\nTrying to collect the xr and then balance up but he wants to be careful(the seller) because I still have to balance 45k which is quite alot\nNow im here working on ny project progress report for presentation tomorrow"
+  },
+  "2026-07-20": {
+    "prayed": true,
+    "habitFree": false,
+    "gym": false,
+    "sleepHours": "",
+    "focused": true,
+    "calm": true,
+    "showedUp": true,
+    "notes": "Engaged pmo a record 3vtimes between last night and this morning\nThings are getting bad.\nI after then prepped and went to ßchool for my fyp progress defense\nTalked to he phine vendor who has now changed the terms of the drsl ssy8ng I wont get tge phome till my money is complete\nSo as a result ill hold out and buy the 11\nThink thats a better decision\nHad the progress defense and my supervisor was impressed with me particularly\nMet up with my girl who came through f8r me even though i didnt want\nShe got me food amd also paid my transport back home this evening as I was tired\nThe meeting woth my supervisor ended by 6\nAnd now I'm here\nHave stuff i should bendoing but I'm broke and dont really have much data tomwork on my laptop"
+  },
+  "2026-07-21": {
+    "prayed": true,
+    "habitFree": true,
+    "gym": false,
+    "sleepHours": "",
+    "focused": true,
+    "calm": true,
+    "showedUp": true,
+    "notes": "Didnt really do much today\nChecked for the payment for one job I did\nEstimated at 14k\nTried working for a bit but network and the rain that eventually fell didn't allow me accomplish so much\nMy girl and I didn't really talk today mostly because we were both busy\nI washed my clothes and she made potato chips and also made someone's hair"
+  },
+  "2026-07-22": {
+    "prayed": true,
+    "habitFree": true,
+    "gym": true,
+    "sleepHours": "",
+    "focused": true,
+    "calm": true,
+    "showedUp": true,
+    "notes": "Woke up\nDid 50 pushups\nWentnto see my friend in the morning and also to collect a trouser inintend on buying\n\nCame back\nTook my stuff añd went to read. Did 5/20\nWent to the guy putting me through annotation work and jobs\nWorked for about 2 hours\nCame back\nShowered, ate\nStarted reading\nRead from 7 till 11\nWith lil breaks in between where I had to talk to my mum and also resolve a misunderstanding I had with my woman today, I love that girl so much man\nMy heart kept skipping beats when I thought of her, I feared another fight that's how much I hate fights\nAnyhow\nIts 11:51\nMy head is aching\nTrying to get some sleep.\nM6 test is by 4pm tomorrow. But I have a class by 2pm"
+  },
+  "2026-07-23": {
+    "prayed": true,
+    "habitFree": true,
+    "gym": true,
+    "sleepHours": "",
+    "focused": true,
+    "calm": true,
+    "showedUp": true,
+    "notes": "Woke up\nDid 50 pushups\nTook my stuff to read when I got the cr for that job I did 14k but it's been full budgeted, I bought sub so I can work on my laptop, I'll also make payment for my gym stuff after sending this\nI went to school early\nRead for a bit\nMet up with my girl who was still.moody and I did my bit to make her smile, thankfully she felt better while with me and we talking well right now\nWe're in a really good place I cant lie\nTook her to attend one of my classes today, lol. Now about the class\nIt was discovered that we as a level were supposed to do soil mechanics 2 as a prerequisite course for our graduation and we didn't do it\nIt wasn't even available on our portals to register\nSo in order to rectify we were asked to register the coirse this week\nMimd you exams start in 2 weeks!!!\nWe just had the first kecture today and he gave assignments that would be used as our ca\nAfter the class I saw her off and went to write my test. I score the highest, 31/35\n(The lecturer exchanged our scripts and I knew who marked mine) So he told me my score.\nCame back home\nDid a bit of work (2 hours worth) my laptop is down now and my head is aching but I and my girl are still talking\nHad to take this inventory else I may forget and go to sleep."
+  },
+  "2026-07-24": {
+    "prayed": true,
+    "habitFree": true,
+    "gym": true,
+    "sleepHours": "",
+    "focused": true,
+    "calm": true,
+    "showedUp": true,
+    "notes": "Woke up\nDidn't do much today up untill it was time for my class by 2 which I attended\nAlso did an assignment that was to be submitted today and submitted for me and my friend(the one teaching me and putting me on jobs)\nGot the credit of 40k for the upkeep I was owed but I've racked up debts that when the phone money is included goes well over 100k\nUsed 20k to settle debts, buy a perfume and now im left with 21k. Went to the gym after making the payment 2 days ago. I currently working on one annotation task\nFound out joinshift pays $15/task. But payment takes up 30 days..."
+  },
+  "2026-07-25": {
+    "prayed": true,
+    "habitFree": true,
+    "gym": true,
+    "sleepHours": "",
+    "focused": true,
+    "calm": true,
+    "showedUp": true,
+    "notes": "I'll do this tomorrow\nIm so sleepy"
+  },
+  "2026-07-26": {
+    "prayed": true,
+    "habitFree": true,
+    "gym": true,
+    "sleepHours": "",
+    "focused": true,
+    "calm": true,
+    "showedUp": true,
+    "notes": ""
+  },
+  "2026-07-27": {
+    "prayed": true,
+    "habitFree": true,
+    "gym": true,
+    "sleepHours": "",
+    "focused": true,
+    "calm": true,
+    "showedUp": true,
+    "notes": "Today was the start of FYB week started with corporate day\nDressed corporate and went to school, we were supposed to have a progress defences that didn't work out\nNone of us had our slides ready I've been busy with annotation work anf the other groups, God only knows they excuse\nMoving on\nWe waited for hours and while we were waisting i went to where other people fybs who dressed corporately were and were takijg pictures so i joined them, took a lot of pictures, danced\nMade videos too.\nIt was a whole vibe really. I had my girl over, we were supposed to go back home afterwards but my progress defence had not started so I had to wait as attendance was crucial, it felt like a let down for my girl cos she was really looking forward to spending time with me.i was too it's beejnsoo long since weve been together\nAnd bow I'm back\nQuick observation pmo now at 7 days is a joint highest record since I got stuck and I think the urge reduces each day, can't lie I'm proud of myself, thank youuu\nI lost my friend today, we've been friends from secondary school, not the clsest of friends but we kept touch\n\nAnd about yesterday\nMy girl invited me to her church and I honoured the invitation\nThe service was better than I expected honestly\nWe got to my friend's place and we had a lil make out session that ended in a quickie\nIt felt like I did cum hut im not so sure cos i pulled out really early and I didn't climax and then she felt cum on the floor don't know if that's a sign though, she was on ovulating. I came back home and did one annotation work and I think that's about it for the day"
+  },
+  "2026-07-29": {
+    "prayed": true,
+    "habitFree": true,
+    "gym": false,
+    "sleepHours": "",
+    "focused": true,
+    "calm": true,
+    "showedUp": true,
+    "notes": ""
+  },
+  "2026-07-30": {
+    "prayed": true,
+    "habitFree": true,
+    "gym": false,
+    "sleepHours": "",
+    "focused": true,
+    "calm": true,
+    "showedUp": true,
+    "notes": ""
+  },
+  "2026-08-01": {
+    "prayed": true,
+    "habitFree": true,
+    "gym": true,
+    "sleepHours": "",
+    "focused": true,
+    "calm": true,
+    "showedUp": true,
+    "notes": "I actually forgot to do this yesterday, alot happened and it's been about 4 days since my last pmo reset but its calm. In these last days let's go back to the reset, it was very sad because I had my girlfriend and we fucked the very next day, could have just denied myself that pleasure for a tinny winny bit\nCame in a lone time in the house, was unmotivated to work after hearing the pay terms for joinshift, I wrote a test 2 days after which was very good, concluded the fyb week festivities, I attended all 5 of them twice with my girlfriend, took loads of pictures and now exam prep begins as we start exams on monday(today is Saturday)\nIts a m Saturday morning\nI made soup yesterday and gave some to my girl, we've been fighting cos I posed inappropriately with a girl, we settled that yesterday, she gets very jealous these days, not in a bad way though.\nCurrently packing my clothes into my bag so I can continue reading, spentntyebjight in school for tdb but I firgit something's at home, had to go back, returned, settled thungs with my girl, my network was shit fornthe kost part so I couldn't get the handouts in time but I did a very lttle but ~30-1hr reading so I've got to lock in this afternoon, it's already afternoon, I've eaten and we about to finish up and start reading."
+  }
+};
+
+function defaultData(){
+  return {
+    entries: JSON.parse(JSON.stringify(SEED_ENTRIES)),
+    milestones: {
+      immigration: [
+        {l:"Obtain international passport", d:false},
+        {l:"Book IELTS Academic (Sept/Oct '26)", d:false},
+        {l:"Sit IELTS Academic", d:false},
+        {l:"Request official transcripts", d:false},
+        {l:"Finalize SBBE motivation letter", d:false},
+        {l:"Submit Helsinki / EMJM-SBBE application", d:false},
+        {l:"Receive admission decision", d:false},
+      ],
+      career: [
+        {l:"FYP Objective 3 complete", d:false},
+        {l:"FYP Objective 4 complete", d:false},
+        {l:"Sugarcane bagasse restocked", d:false},
+        {l:"FYP defense done", d:false},
+        {l:"Graduate FUT Minna", d:false},
+        {l:"Land a steady remote/freelance income stream", d:false},
+      ],
+      unfazed: [
+        {l:"Null & Void shoot complete", d:false},
+        {l:"Null & Void drop launched", d:false},
+        {l:"Consistent posting cadence (3x/week)", d:false},
+        {l:"First press / blog mention", d:false},
+        {l:"Hit a real monthly revenue milestone", d:false},
+        {l:"Vogue / major press feature", d:false},
+      ]
+    },
+    house: { saved: 0, target: 70000000 },
+    phone: { saved: 105000, target: 185000, installments: [true,true,false] }
+  };
+}
+
+let data = null;
+let tab = "today";
+let todayView = "form";
+let statusTimer = null;
+
+function hasClaudeStorage(){
+  return (typeof window.storage !== 'undefined') && window.storage && typeof window.storage.get === 'function';
+}
+
+async function storageGet(){
+  if(hasClaudeStorage()){
+    try{
+      const res = await window.storage.get(KEY, false);
+      return res ? JSON.parse(res.value) : null;
+    }catch(e){ return null; }
+  }
+  try{
+    const raw = localStorage.getItem(KEY);
+    return raw ? JSON.parse(raw) : null;
+  }catch(e){ return null; }
+}
+
+async function storageSet(obj){
+  if(hasClaudeStorage()){
+    try{ await window.storage.set(KEY, JSON.stringify(obj), false); return true; }catch(e){ return false; }
+  }
+  try{ localStorage.setItem(KEY, JSON.stringify(obj)); return true; }catch(e){ return false; }
+}
+
+async function load(){
+  const loaded = await storageGet();
+  data = loaded || defaultData();
+  if(!data.phone) data.phone = { saved: 0, target: 185000, installments: [false,false,false] };
+  Object.values(data.entries).forEach(e=>{ if(e.prayed===undefined) e.prayed = null; });
+  render();
+}
+
+async function save(msg){
+  const ok = await storageSet(data);
+  flashStatus(ok ? (msg || "Saved") : "Save failed — try again");
+}
+
+function flashStatus(msg){
+  const el = document.getElementById("status");
+  if(!el) return;
+  el.textContent = msg;
+  clearTimeout(statusTimer);
+  statusTimer = setTimeout(()=>{ if(el) el.textContent = ""; }, 2200);
+}
+
+function dayCount(){
+  const start = new Date(START); const now = new Date(todayStr());
+  return Math.max(1, Math.round((now-start)/86400000)+1);
+}
+function habitStreak(){
+  let streak = 0, d = new Date(todayStr());
+  while(true){
+    const e = data.entries[d.toISOString().slice(0,10)];
+    if(e && e.habitFree === true){ streak++; d.setDate(d.getDate()-1); } else break;
+  }
+  return streak;
+}
+function prayerStreak(){
+  let streak = 0, d = new Date(todayStr());
+  while(true){
+    const e = data.entries[d.toISOString().slice(0,10)];
+    if(e && e.prayed === true){ streak++; d.setDate(d.getDate()-1); } else break;
+  }
+  return streak;
+}
+function gymStreak7(){
+  let count = 0, d = new Date(todayStr());
+  for(let i=0;i<7;i++){
+    const e = data.entries[d.toISOString().slice(0,10)];
+    if(e && e.gym) count++;
+    d.setDate(d.getDate()-1);
+  }
+  return count;
+}
+function ensureToday(){
+  const t = todayStr();
+  if(!data.entries[t]) data.entries[t] = {habitFree:null, gym:false, sleepHours:"", focused:null, calm:null, showedUp:null, prayed:null, notes:""};
+  return data.entries[t];
+}
+function fmt(n){ return "₦" + Number(n||0).toLocaleString(); }
+function yn(v){ return v===true ? '<span class="v yes">Yes</span>' : v===false ? '<span class="v no">No</span>' : '<span class="v na">—</span>'; }
+function ynText(v){ return v===true ? 'Yes' : v===false ? 'No' : '—'; }
+
+function render(){
+  const app = document.getElementById("app");
+  const today = ensureToday();
+  const dc = dayCount();
+  const streak = habitStreak();
+  const pStreak = prayerStreak();
+  const gym7 = gymStreak7();
+
+  app.innerHTML = `
+    <div class="eyebrow">Unfazed · Life Reset</div>
+    <h1>Friday, 3rd July — the countdown starts</h1>
+    <div class="sub">Two years. One commitment. No noise.</div>
+
+    <div class="hero">
+      <div class="day-count">Day <span>${dc}</span> / 730</div>
+      <div class="day-label">of the two-year build</div>
+      <div class="hero-dates"><span>Started ${START}</span><span>Target ${END}</span></div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab ${tab==='today'?'active':''}" data-tab="today">Today</div>
+      <div class="tab ${tab==='pillars'?'active':''}" data-tab="pillars">Pillars</div>
+      <div class="tab ${tab==='history'?'active':''}" data-tab="history">History</div>
+      <div class="tab ${tab==='vision'?'active':''}" data-tab="vision">Vision</div>
+    </div>
+
+    <div id="tab-content"></div>
+  `;
+
+  const content = document.getElementById("tab-content");
+  if(tab === "today"){
+    content.innerHTML = todayView === "summary" ? renderSummary(today, streak, pStreak, dc) : renderToday(today, streak, pStreak, gym7);
+  }
+  if(tab === "pillars") content.innerHTML = renderPillars();
+  if(tab === "history") content.innerHTML = renderHistory();
+  if(tab === "vision") content.innerHTML = renderVision();
+
+  attachHandlers();
+}
+
+function renderToday(e, streak, pStreak, gym7){
+  return `
+    <div class="card">
+      <h2><span class="n">01</span>Spirit & body</h2>
+      <div class="streak-row">
+        <div class="streak-pill"><b>${streak}</b><span>clean streak</span></div>
+        <div class="streak-pill"><b>${pStreak}</b><span>prayer streak</span></div>
+        <div class="streak-pill"><b>${gym7}/7</b><span>gym this wk</span></div>
+      </div>
+      ${toggleVal("prayed","Prayed today", e.prayed)}
+      ${toggleVal("habitFree","No porn / masturbation today", e.habitFree, "A reset day counts as progress, not failure.")}
+      ${toggleVal("gym","Trained / gym today", e.gym)}
+      <div class="toggle-row">
+        <div><div class="toggle-label">Sleep last night (hrs)</div></div>
+        <input id="sleepHours" type="number" min="0" max="14" step="0.5" style="width:70px" value="${e.sleepHours}"/>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="n">02</span>Focus & temper</h2>
+      ${toggleVal("focused","Stayed on task, no procrastination spiral", e.focused)}
+      ${toggleVal("calm","Responded instead of reacted today", e.calm)}
+    </div>
+
+    <div class="card">
+      <h2><span class="n">03</span>Relationship</h2>
+      ${toggleVal("showedUp","Showed up well with Alwell today", e.showedUp, "Not every day needs a win here — just be honest.")}
+    </div>
+
+    <div class="card">
+      <h2><span class="n">04</span>Notes</h2>
+      <textarea id="notes" rows="4" placeholder="What actually happened today...">${e.notes||""}</textarea>
+    </div>
+
+    <button class="save-btn" id="saveToday">Save today's check-in</button>
+    <button class="ghost-btn" id="viewSummary">View & export today's summary</button>
+    <div class="status" id="status"></div>
+  `;
+}
+
+function toggleVal(key,label,val,sub){
+  const state = val===true ? "on" : "";
+  return `
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-label">${label}</div>
+        ${sub?`<div class="toggle-sub">${sub}</div>`:""}
+      </div>
+      <div class="switch ${state}" data-key="${key}"><div class="dot"></div></div>
+    </div>
+  `;
+}
+
+function renderSummary(e, streak, pStreak, dc){
+  const dateNice = new Date(todayStr()+"T12:00:00").toLocaleDateString('en-GB',{weekday:'long', day:'numeric', month:'long', year:'numeric'});
+  return `
+    <div class="summary-card" id="summaryCard">
+      <div class="summary-title">Unfazed — Day ${dc}</div>
+      <div class="summary-date">${dateNice}</div>
+      <div class="summary-row"><span>Prayed</span>${yn(e.prayed)}</div>
+      <div class="summary-row"><span>No PMO (streak: ${streak})</span>${yn(e.habitFree)}</div>
+      <div class="summary-row"><span>Gym / trained</span>${yn(e.gym)}</div>
+      <div class="summary-row"><span>Sleep</span><span class="v">${e.sleepHours? e.sleepHours+' hrs':'—'}</span></div>
+      <div class="summary-row"><span>Focused, no procrastination</span>${yn(e.focused)}</div>
+      <div class="summary-row"><span>Stayed calm</span>${yn(e.calm)}</div>
+      <div class="summary-row"><span>Showed up for Alwell</span>${yn(e.showedUp)}</div>
+      ${e.notes ? `<div class="summary-notes">${escapeHtml(e.notes)}</div>` : ""}
+      <div class="summary-foot">Unfazed · Life Reset · Day ${dc} / 730</div>
+    </div>
+    <div class="status" style="margin-top:6px;">Screenshot this card, or copy it as text below.</div>
+    <button class="save-btn" id="copyText">Copy as text</button>
+    <button class="ghost-btn" id="backToForm">Back to edit</button>
+    <div class="status" id="status"></div>
+    <textarea id="copyBox"></textarea>
+  `;
+}
+
+function buildSummaryText(e, streak, pStreak, dc){
+  const dateNice = new Date(todayStr()+"T12:00:00").toLocaleDateString('en-GB',{weekday:'long', day:'numeric', month:'long', year:'numeric'});
+  return [
+    `UNFAZED — LIFE RESET — Day ${dc}/730`,
+    dateNice,
+    `Prayed: ${ynText(e.prayed)}`,
+    `No PMO: ${ynText(e.habitFree)} (streak: ${streak})`,
+    `Gym: ${ynText(e.gym)}`,
+    `Sleep: ${e.sleepHours ? e.sleepHours+' hrs' : '—'}`,
+    `Focused: ${ynText(e.focused)}`,
+    `Calm: ${ynText(e.calm)}`,
+    `Showed up for Alwell: ${ynText(e.showedUp)}`,
+    e.notes ? `Notes: ${e.notes}` : null
+  ].filter(Boolean).join("\n");
+}
+
+function renderPillars(){
+  const h = data.house;
+  const hpct = Math.min(100, Math.round((h.saved/h.target)*100));
+  const p = data.phone;
+  const ppct = Math.min(100, Math.round((p.saved/p.target)*100));
+  const instAmt = Math.round(p.target/3);
+
+  const groups = [
+    {key:"immigration", title:"Helsinki / immigration", n:"01"},
+    {key:"career", title:"Career & FYP", n:"02"},
+    {key:"unfazed", title:"Unfazed Atelier", n:"03"},
+  ];
+  let html = groups.map(g => `
+    <div class="card">
+      <h2><span class="n">${g.n}</span>${g.title}</h2>
+      ${data.milestones[g.key].map((m,i)=>`
+        <div class="milestone">
+          <div class="check ${m.d?'done':''}" data-group="${g.key}" data-idx="${i}"></div>
+          <div class="milestone-label ${m.d?'done':''}">${m.l}</div>
+        </div>
+      `).join("")}
+    </div>
+  `).join("");
+
+  html += `
+    <div class="card">
+      <h2><span class="n">04</span>Parents' house — Abuja</h2>
+      <div class="progress-outer"><div class="progress-inner" style="width:${hpct}%"></div></div>
+      <div class="progress-text"><span>${fmt(h.saved)} saved</span><span>${hpct}% of ${fmt(h.target)}</span></div>
+      <div style="margin-top:12px;display:flex;gap:8px;">
+        <input id="houseSaved" type="number" placeholder="Update amount saved (₦)" value="${h.saved}"/>
+      </div>
+      <button class="save-btn" id="saveHouse" style="margin-top:10px;">Update</button>
+    </div>
+
+    <div class="card">
+      <h2><span class="n">05</span>Phone — 3 installments</h2>
+      <div class="progress-outer"><div class="progress-inner" style="width:${ppct}%"></div></div>
+      <div class="progress-text"><span>${fmt(p.saved)} saved</span><span>${ppct}% of ${fmt(p.target)}</span></div>
+      <div class="installments">
+        ${[0,1,2].map(i=>`
+          <div class="inst ${p.installments[i]?'done':''}" data-inst="${i}">
+            <div class="amt">${fmt(instAmt)}</div>
+            <div class="lbl">Part ${i+1}${p.installments[i]?' ✓':''}</div>
+          </div>
+        `).join("")}
+      </div>
+      <div style="margin-top:12px;display:flex;gap:8px;">
+        <input id="phoneSaved" type="number" placeholder="Amount saved (₦)" value="${p.saved}"/>
+        <input id="phoneTarget" type="number" placeholder="Target (₦)" value="${p.target}"/>
+      </div>
+      <button class="save-btn" id="savePhone" style="margin-top:10px;">Update</button>
+    </div>
+
+    <div class="card">
+      <h2><span class="n">06</span>Backup your data</h2>
+      <div class="toggle-sub" style="margin-bottom:6px;">Export before switching devices, reinstalling, or hosting the app somewhere new — then import to pick up exactly where you left off.</div>
+      <div class="data-row">
+        <button class="save-btn" id="exportData">Export backup</button>
+        <button class="ghost-btn" id="importBtn">Import backup</button>
+      </div>
+      <input type="file" id="importFile" accept="application/json"/>
+    </div>
+    <div class="status" id="status"></div>
+  `;
+  return html;
+}
+
+function renderVision(){
+  const V = ["Absolutely ripped", "Retired both parents", "Built the Unfazed Atelier brand to a $10M valuation", "Completed his Masters in Finland in Bio-Energy", "Relocated to Finland and has properties across Europe", "Mastered Stoicism", "Dresses elegantly", "Speaks elegantly", "An avid reader", "Married at 26", "Committed to his wife", "A good husband", "A good son", "A dependable friend", "Eats healthy", "Doesn't drink or smoke", "Every girl's dream, but committed to his wife", "A hard worker", "Has conquered lust", "Has a good relationship with God", "Has a razor-sharp intellect", "Excellent at reading people", "An excellent strategist", "Has a net worth of $20M", "Made it to Forbes 30 Under 30", "Built Unfazed into a multi-industry brand, faring well in the automobile sector: MSFIT MOTORS"];
+  const rows = V.map((t,i)=>`<div class="milestone"><div class="milestone-label"><b style="color:var(--orange)">${i+1}.</b> ${escapeHtml(t)}</div></div>`).join("");
+  return `<div class="card"><h2><span class="n">★</span>A Second Chance?</h2><div class="sub" style="margin-bottom:8px">The four-year picture. Day 730 is the first checkpoint, not the finish.</div>${rows}</div>`;
+}
+
+function renderHistory(){
+  const keys = Object.keys(data.entries).sort().reverse();
+  if(keys.length===0) return `<div class="card"><div class="empty">No check-ins yet. Start with today.</div></div>`;
+  const rows = keys.map(k=>{
+    const e = data.entries[k];
+    const tags = [];
+    if(e.prayed===true) tags.push("prayed");
+    if(e.habitFree===true) tags.push("clean day");
+    if(e.habitFree===false) tags.push("reset");
+    if(e.gym) tags.push("gym");
+    if(e.focused) tags.push("focused");
+    if(e.calm) tags.push("calm");
+    if(e.showedUp) tags.push("showed up");
+    return `<div class="history-item"><span class="history-date">${k}</span><span class="history-tags">${tags.join(" · ")||"—"}</span>${e.notes?`<div style="margin-top:4px;color:#cfd8d0;">${escapeHtml(e.notes)}</div>`:""}</div>`;
+  }).join("");
+  return `<div class="card"><h2><span class="n">·</span>Log</h2>${rows}</div>`;
+}
+
+function escapeHtml(s){
+  const d = document.createElement('div'); d.innerText = s; return d.innerHTML;
+}
+
+function attachHandlers(){
+  document.querySelectorAll(".tab").forEach(t=>{
+    t.onclick = ()=>{ tab = t.dataset.tab; todayView = "form"; render(); };
+  });
+
+  document.querySelectorAll(".switch").forEach(sw=>{
+    sw.onclick = ()=>{
+      const e = ensureToday();
+      const k = sw.dataset.key;
+      e[k] = e[k] === true ? false : true;
+      render();
+    };
+  });
+
+  document.querySelectorAll(".check").forEach(c=>{
+    c.onclick = ()=>{
+      const g = c.dataset.group, i = c.dataset.idx;
+      data.milestones[g][i].d = !data.milestones[g][i].d;
+      save("Milestone updated");
+      render();
+    };
+  });
+
+  document.querySelectorAll(".inst").forEach(c=>{
+    c.onclick = ()=>{
+      const i = Number(c.dataset.inst);
+      data.phone.installments[i] = !data.phone.installments[i];
+      save("Installment updated");
+      render();
+    };
+  });
+
+  const saveToday = document.getElementById("saveToday");
+  if(saveToday) saveToday.onclick = ()=>{
+    const e = ensureToday();
+    const sh = document.getElementById("sleepHours");
+    const nt = document.getElementById("notes");
+    if(sh) e.sleepHours = sh.value;
+    if(nt) e.notes = nt.value;
+    save("Today saved");
+  };
+
+  const viewSummary = document.getElementById("viewSummary");
+  if(viewSummary) viewSummary.onclick = ()=>{
+    const e = ensureToday();
+    const sh = document.getElementById("sleepHours");
+    const nt = document.getElementById("notes");
+    if(sh) e.sleepHours = sh.value;
+    if(nt) e.notes = nt.value;
+    save("Today saved");
+    todayView = "summary";
+    render();
+  };
+
+  const backToForm = document.getElementById("backToForm");
+  if(backToForm) backToForm.onclick = ()=>{ todayView = "form"; render(); };
+
+  const copyText = document.getElementById("copyText");
+  if(copyText) copyText.onclick = ()=>{
+    const e = ensureToday();
+    const dc = dayCount();
+    const streak = habitStreak();
+    const pStreak = prayerStreak();
+    const text = buildSummaryText(e, streak, pStreak, dc);
+    const box = document.getElementById("copyBox");
+    box.value = text;
+    box.style.position = "fixed";
+    box.style.left = "0";
+    box.style.top = "0";
+    box.focus();
+    box.select();
+    try{
+      document.execCommand('copy');
+      flashStatus("Copied — paste it to Claude");
+    }catch(err){
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(()=>flashStatus("Copied — paste it to Claude")).catch(()=>flashStatus("Copy failed — select text manually"));
+      } else {
+        flashStatus("Copy failed — select text manually");
+      }
+    }
+    box.style.position = "";
+    box.style.left = "-9999px";
+  };
+
+  const saveHouse = document.getElementById("saveHouse");
+  if(saveHouse) saveHouse.onclick = ()=>{
+    const v = document.getElementById("houseSaved").value;
+    data.house.saved = Number(v)||0;
+    save("Updated");
+    render();
+  };
+
+  const savePhone = document.getElementById("savePhone");
+  if(savePhone) savePhone.onclick = ()=>{
+    const v = document.getElementById("phoneSaved").value;
+    const t = document.getElementById("phoneTarget").value;
+    data.phone.saved = Number(v)||0;
+    if(t && Number(t) > 0) data.phone.target = Number(t);
+    save("Updated");
+    render();
+  };
+
+  const exportBtn = document.getElementById("exportData");
+  if(exportBtn) exportBtn.onclick = ()=>{
+    try{
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `unfazed-life-reset-backup-${todayStr()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      flashStatus("Backup downloaded — save it somewhere safe");
+    }catch(err){
+      flashStatus("Export failed — try again");
+    }
+  };
+
+  const importBtn = document.getElementById("importBtn");
+  const importFile = document.getElementById("importFile");
+  if(importBtn && importFile){
+    importBtn.onclick = ()=> importFile.click();
+    importFile.onchange = (ev)=>{
+      const file = ev.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = async (e)=>{
+        try{
+          const imported = JSON.parse(e.target.result);
+          if(!imported.entries) throw new Error("Not a valid backup file");
+          data = imported;
+          await save("Backup restored");
+          render();
+        }catch(err){
+          flashStatus("Invalid backup file");
+        }
+      };
+      reader.readAsText(file);
+      importFile.value = "";
+    };
+  }
+}
+
+load();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+}
+</script>
+</body>
+</html>
